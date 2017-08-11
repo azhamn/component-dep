@@ -86,8 +86,6 @@
 									<td>IVORYCOAST :</td>
 									<%} else if (opcoapps[i].operatorid==2) {%>
 									<td>SENEGAL :</td>
-													
-							
 									<%}%>
 
 									<td colspan="2"><%=opcoapps[i].status%></td>
@@ -177,8 +175,6 @@
 															<%if (opcosubs[j].operatorid==1) {%>
 															<td>IVORYCOAST :</td>
 															<%} else if (opcosubs[j].operatorid==2) {%>
-								  
-														  
 															<td>SENEGAL :</td>
 															<%}%>
 

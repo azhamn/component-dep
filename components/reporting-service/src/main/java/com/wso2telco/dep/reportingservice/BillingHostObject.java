@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright  (c) 2015-2016, WSO2.Telco Inc. (http://www.wso2telco.com) All Rights Reserved.
- *  
+ *
  *  WSO2.Telco Inc. licences this file to you under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,9 +20,12 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
 import javax.xml.stream.XMLStreamException;
+
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.util.AXIOMUtil;
 import org.apache.commons.logging.Log;
@@ -42,6 +45,7 @@ import org.wso2.carbon.apimgt.impl.APIManagerFactory;
 import org.wso2.carbon.apimgt.impl.dao.ApiMgtDAO;
 import org.wso2.carbon.apimgt.impl.utils.APIUtil;
 import org.wso2.carbon.apimgt.usage.client.dto.APIVersionUserUsageDTO;
+
 import com.wso2telco.core.dbutils.exception.BusinessException;
 import com.wso2telco.dep.reportingservice.dao.Approval;
 import com.wso2telco.dep.reportingservice.dao.BillingDAO;
@@ -61,23 +65,23 @@ public class BillingHostObject extends ScriptableObject {
 
     /** The Constant log. */
     private static final Log log = LogFactory.getLog(BillingHostObject.class);
-    
+
     /** The hostobject name. */
     private String hostobjectName = "BillingHostObject";
-    
+
     /** The api consumer. */
     private APIConsumer apiConsumer;
-    
+
     /** The tier pricing. */
     private static Map<String, Float> tierPricing = new HashMap<String, Float>();
-    
+
     /** The tier maximum count. */
     private static Map<String, Integer> tierMaximumCount = new HashMap<String, Integer>();
-    
+
     /** The tier unit time. */
     private static Map<String, Integer> tierUnitTime = new HashMap<String, Integer>();
-   
-    
+
+
     /**
      * Gets the tier pricing.
      *
@@ -113,7 +117,7 @@ public class BillingHostObject extends ScriptableObject {
     public String getUsername() {
         return username;
     }
-    
+
     /** The username. */
     private String username;
 
@@ -129,7 +133,7 @@ public class BillingHostObject extends ScriptableObject {
      * Instantiates a new billing host object.
      *
      * @param username the username
-     * @throws BusinessException 
+     * @throws BusinessException
      * @throws APIManagementException the API management exception
      */
     public BillingHostObject(String username) throws BusinessException{
@@ -185,12 +189,12 @@ public class BillingHostObject extends ScriptableObject {
      * @param args the args
      * @param funObj the fun obj
      * @return the string
-     * @throws Exception 
+     * @throws Exception
      */
     public static String jsFunction_getReportFileContent(Context cx, Scriptable thisObj,
             Object[] args, Function funObj)
             throws BusinessException {
-        if (args == null || args.length == 0) {  
+        if (args == null || args.length == 0) {
         	log.error("jsFunction_getReportFileContent null or empty arguments");
             throw new BusinessException(ReportingServiceError.INPUT_ERROR);
         }
@@ -198,7 +202,7 @@ public class BillingHostObject extends ScriptableObject {
         String subscriberName = (String) args[0];
         String period = (String) args[1];
         boolean isNorthbound = (Boolean) args[2];
-      
+
         try {
 			generateReport(subscriberName, period, true, isNorthbound, "__ALL__");
 		} catch (Exception e) {
@@ -219,7 +223,7 @@ public class BillingHostObject extends ScriptableObject {
      * @param funObj the fun obj
      * @return the native array
      * @throws APIManagementException the API management exception
-     * @throws BusinessException 
+     * @throws BusinessException
      */
     public static NativeArray jsFunction_getCustomCareDataReport(Context cx, Scriptable thisObj,
             Object[] args, Function funObj)
@@ -274,8 +278,8 @@ public class BillingHostObject extends ScriptableObject {
         String app = (String) args[5];
         String api = (String) args[6];
 
-        String dataString;		
-		dataString = getCustomCareDataRecordCount(fromDate, toDate, msisdn, subscriberName, operator, app, api);	
+        String dataString;
+		dataString = getCustomCareDataRecordCount(fromDate, toDate, msisdn, subscriberName, operator, app, api);
 
         return dataString;
     }
@@ -366,7 +370,7 @@ public class BillingHostObject extends ScriptableObject {
      * @param args the args
      * @param funObj the fun obj
      * @return the native array
-     * @throws Exception 
+     * @throws Exception
      */
     public static NativeArray jsFunction_getCostPerAPI(Context cx, Scriptable thisObj,
             Object[] args, Function funObj)
@@ -463,7 +467,7 @@ public class BillingHostObject extends ScriptableObject {
                             }
                         }
                     } catch (Exception e) {
-                        
+
                         log.error("jsFunction_getCostPerAPI",e);
                         throw new BusinessException(ReportingServiceError.INTERNAL_SERVER_ERROR);
                     }
@@ -480,7 +484,7 @@ public class BillingHostObject extends ScriptableObject {
             apiPriceResponse.put(i, apiPriceResponse, row);
             i++;
         }
-       
+
         return apiPriceResponse;
     }
 
@@ -493,7 +497,7 @@ public class BillingHostObject extends ScriptableObject {
      * @param isNorthbound the is northbound
      * @param operatorName the operator name
      * @return the native array
-     * @throws Exception 
+     * @throws Exception
      */
     private static NativeArray generateReport(String subscriberName, String period, boolean persistReport, boolean isNorthbound, String operatorName) throws BusinessException {
 
@@ -509,7 +513,7 @@ public class BillingHostObject extends ScriptableObject {
         NativeArray ret = null;
         try {
             ret = (isNorthbound) ? NbHostObjectUtils.generateReportofSubscriber(persistReport, subscriberName, period, rateCard) : SbHostObjectUtils.generateReportofSubscriber(persistReport, subscriberName, period, rateCard, operatorName);
-        } catch (Exception e) {            
+        } catch (Exception e) {
         	log.error("generateReport",e);
         	throw new BusinessException(ReportingServiceError.INTERNAL_SERVER_ERROR);
         }
@@ -538,14 +542,14 @@ public class BillingHostObject extends ScriptableObject {
                 try {
 					ret = NbHostObjectUtils.generateCustomTrafficReport(true, fromDate, toDate, subscriberName, operator, api, isError, applicationId, timeOffset, resType);
 				} catch (Exception e) {
-					
+
 					e.printStackTrace();
 				}
             } else {
                 ret = SbHostObjectUtils.generateCustomTrafficReport(true, fromDate, toDate, subscriberName, operator, api, isError, applicationId, timeOffset, resType);
             }
         } catch (Exception e) {
-            log.error("generateCustomApiTrafficReport",e);        	
+            log.error("generateCustomApiTrafficReport",e);
             throw new BusinessException(ReportingServiceError.INTERNAL_SERVER_ERROR);
         }
         return ret;
@@ -592,7 +596,7 @@ public class BillingHostObject extends ScriptableObject {
      * @param api the api
      * @return the custom care data record count
      * @throws APIManagementException the API management exception
-     * @throws BusinessException 
+     * @throws BusinessException
      */
     private static String getCustomCareDataRecordCount(String fromDate, String toDate, String msisdn, String subscriberName, String operator, String app, String api) throws BusinessException {
 
@@ -665,7 +669,7 @@ public class BillingHostObject extends ScriptableObject {
 
         } catch (Exception e) {
             log.error("Error occured getResponseTimeData ",e);
-            throw new BusinessException(ReportingServiceError.INTERNAL_SERVER_ERROR); 
+            throw new BusinessException(ReportingServiceError.INTERNAL_SERVER_ERROR);
         }
         log.info("End of getResponseTimeData");
         return nativeArray;
@@ -797,6 +801,30 @@ public class BillingHostObject extends ScriptableObject {
         return nativeArray;
     }
 
+    public static NativeArray jsFunction_getOperators() throws BusinessException {
+        NativeArray nativeArray = new NativeArray(0);
+
+        try {
+        	Map<Integer, String> operators = SbHostObjectUtils.getOperators();
+        	short i = 0;
+        	if (operators != null) {
+        		nativeArray = new NativeArray(0);
+        	}
+        	for (Map.Entry<Integer, String> entry : operators.entrySet()) {
+        		NativeObject row = new NativeObject();
+        		row.put("operatorId", row, entry.getKey().toString());
+        		row.put("operatorName", row, entry.getValue().toString());
+        		nativeArray.put(i, nativeArray, row);
+        		i++;
+        	}
+
+        } catch (Exception e) {
+            log.error("Error occurred getOperators",e);
+            throw new BusinessException(ReportingServiceError.INTERNAL_SERVER_ERROR);
+        }
+        return nativeArray;
+    }
+
     /**
      * Js function_get total api traffic for pie chart.
      *
@@ -806,7 +834,7 @@ public class BillingHostObject extends ScriptableObject {
      * @param funObj the fun obj
      * @return the native array
      * @throws APIManagementException the API management exception
-     * @throws BusinessException 
+     * @throws BusinessException
      */
     public static NativeArray jsFunction_getTotalAPITrafficForPieChart(Context cx, Scriptable thisObj, Object[] args,
             Function funObj) throws BusinessException {
@@ -974,7 +1002,7 @@ public class BillingHostObject extends ScriptableObject {
      * @param funObj the fun obj
      * @return the native array
      * @throws APIManagementException the API management exception
-     * @throws BusinessException 
+     * @throws BusinessException
      */
     public static NativeArray jsFunction_getSubscribersByOperator(Context cx, Scriptable thisObj, Object[] args,
             Function funObj) throws BusinessException {
@@ -1008,7 +1036,7 @@ public class BillingHostObject extends ScriptableObject {
      * @param funObj the fun obj
      * @return the native array
      * @throws APIManagementException the API management exception
-     * @throws BusinessException 
+     * @throws BusinessException
      */
     public static NativeArray jsFunction_getApplicationsBySubscriber(Context cx, Scriptable thisObj, Object[] args,
             Function funObj) throws BusinessException {
@@ -1367,7 +1395,7 @@ public class BillingHostObject extends ScriptableObject {
             }
         } catch (Exception e) {
             log.error("Error occurred getErrorResponseCodesForHistogram",e);
-            throw new BusinessException(ReportingServiceError.INTERNAL_SERVER_ERROR);            
+            throw new BusinessException(ReportingServiceError.INTERNAL_SERVER_ERROR);
         }
         return nativeArray;
     }
@@ -1483,7 +1511,7 @@ public class BillingHostObject extends ScriptableObject {
      * @param args the args
      * @param funObj the fun obj
      * @return the native array
-     * @throws Exception 
+     * @throws Exception
      */
     @SuppressWarnings("null")
     public static NativeArray jsFunction_getSPforBlacklist(Context cx, Scriptable thisObj, Object[] args, Function funObj) throws BusinessException {
@@ -1492,17 +1520,17 @@ public class BillingHostObject extends ScriptableObject {
         }
         String operator = String.valueOf(args[2]);
         Boolean isadmin = Boolean.valueOf(String.valueOf(args[1]));
-        
+
         BillingDAO billingDAO = new BillingDAO();
-        
+
         List<SPObject> spList;
-		
+
         try {
 			spList = billingDAO.generateSPList();
 		} catch (Exception e) {
 			throw new BusinessException(ReportingServiceError.INTERNAL_SERVER_ERROR);
 		}
-		
+
         List<SPObject> spListoperator = OperatorDAO.getSPList(operator);
         NativeArray nativeArray = new NativeArray(0);
         NativeObject nativeObject;
@@ -1526,7 +1554,7 @@ public class BillingHostObject extends ScriptableObject {
                 i++;
             }
         }
-        
+
         return nativeArray;
     }
 
@@ -1538,7 +1566,7 @@ public class BillingHostObject extends ScriptableObject {
      * @param args the args
      * @param funObj the fun obj
      * @return the native object
-     * @throws Exception 
+     * @throws Exception
      */
     public static NativeObject jsFunction_getAppforBlacklist(Context cx, Scriptable thisObj, Object[] args, Function funObj) throws BusinessException {
         if (args == null || args.length == 0) {
@@ -1626,7 +1654,7 @@ public class BillingHostObject extends ScriptableObject {
         return nativeArray;
     }
 
-     
+
     /**
      * Subtract time range.
      *
@@ -1650,7 +1678,7 @@ public class BillingHostObject extends ScriptableObject {
         return fromDate;
     }
 
-     
+
     /**
      * Gets the current time.
      *
@@ -1661,7 +1689,7 @@ public class BillingHostObject extends ScriptableObject {
         return date.get(Calendar.YEAR) + "-" + (date.get(Calendar.MONTH) + 1) + "-" + date.get(Calendar.DATE);
     }
 
-     
+
     /**
      * Gets the time in milli.
      *
@@ -1757,7 +1785,7 @@ public class BillingHostObject extends ScriptableObject {
      */
     public static NativeObject jsFunction_getDashboardAPIResponseTimeForLineChart(Context cx, Scriptable thisObj, Object[] args,
             Function funObj) throws BusinessException {
-    	
+
         NativeObject nativeObject = new NativeObject();
 
         String timeRange = args[0].toString();

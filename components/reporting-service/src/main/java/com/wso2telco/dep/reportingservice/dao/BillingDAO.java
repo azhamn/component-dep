@@ -2552,7 +2552,7 @@ public class BillingDAO {
             while (results.next()) {
             	SPObject spObject=new SPObject();
             	spObject.setAppId(results.getInt("application_id"));
-            	spObject.setSpName(results.getString("name"));
+            	spObject.setSpName(results.getString("authz_user"));
             	spList.add(spObject);                
             }
             return spList;

@@ -641,6 +641,61 @@ public class BlackListWhiteListDAO {
         }
 	}
 
+	/**
+	 * Generate sp list.
+	 *
+	 * @return the array list
+	 * @throws Exception the exception
+	 */
+	public List<String> generateSPNameList() throws Exception {
+		Connection connection = null;
+		PreparedStatement ps = null;
+		ResultSet results = null;
+		String sql = SQLConstants.GET_SP_NAMES;
+
+		ArrayList<String> spList = new ArrayList<String>();
+
+		try {
+			connection =DbUtils.getDbConnection(DataSourceNames.WSO2AM_DB);
+			ps = connection.prepareStatement(sql.toString());
+			results = ps.executeQuery();
+			while (results.next()) {
+			    spList.add(results.getString("authz_user"));
+			}
+			return spList;
+		} catch (Exception e) {
+			throw new BusinessException(OparatorError.INTERNAL_SERVER_ERROR);
+		} finally {
+			DbUtils.closeAllConnections(ps, connection, results);
+		}
+	}
+
+    /**
+     * Gets list of users with manage-app-admin role assigned to them
+     */
+
+    public List<String> getAdminUsers() throws Exception {
+        Connection connection = null;
+        PreparedStatement ps = null;
+        ResultSet results = null;
+        String sql = SQLConstants.GET_ADMIN_USERS;
+
+        ArrayList<String> adminUserList = new ArrayList<String>();
+
+        try {
+            connection =DbUtils.getDbConnection(DataSourceNames.WSO2UM_DB);
+            ps = connection.prepareStatement(sql.toString());
+            results = ps.executeQuery();
+            while (results.next()) {
+                adminUserList.add(results.getString("um_user_name"));
+            }
+            return adminUserList;
+        } catch (Exception e) {
+            throw new BusinessException(OparatorError.INTERNAL_SERVER_ERROR);
+        } finally {
+            DbUtils.closeAllConnections(ps, connection, results);
+        }
+    }
 
 	/**
 	 * Get access token data based on application ID

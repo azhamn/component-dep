@@ -486,6 +486,14 @@ public class Queries {
 		return Response.status(Response.Status.OK).entity(jsonString).build();
 	}
 
+	@GET
+	@Path("/sp/list")
+	@Produces("application/json")
+	public Response getSPNameList() throws Exception {
+
+		return Response.status(Response.Status.OK).entity(blackListWhiteListService.getSPNameList()).build();
+	}
+
 
 	/*	*//**
 			 * get all subscribers

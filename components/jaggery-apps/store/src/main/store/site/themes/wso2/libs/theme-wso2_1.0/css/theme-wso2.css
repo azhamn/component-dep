@@ -3227,16 +3227,7 @@ footer .icon {
   vertical-align: middle;
   color: #cbcbcb;
 }
-
-footer a {
-  color: #cbcbcb;
-}
-
-footer a:hover {
-  color: #d9edf7 !important;
-}
-
-footer a:visited {
+footer a, footer a:hover {
   color: #cbcbcb;
 }
 

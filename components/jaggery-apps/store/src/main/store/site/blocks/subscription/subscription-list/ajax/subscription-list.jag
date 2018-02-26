@@ -1,7 +1,6 @@
 <%
 include("/jagg/jagg.jag");
 (function () {
-    var log = new Log();
     var site = require("/site/conf/site.json");
     var ssoEnabled = site.ssoConfiguration.enabled;
     response.contentType = "application/json; charset=UTF-8";
@@ -257,43 +256,7 @@ include("/jagg/jagg.jag");
         username = user.username;
 
         mod = jagg.module("subscription");
-        
-        var storeMod = jagg.module("manager").getStoreHostObject();
-
         result = mod.getAPISubscriptionsForApplication(username,appname);
-
-        var APIUtil = Packages.org.wso2.carbon.apimgt.impl.utils.APIUtil;
-        var applicationId = APIUtil.getApplicationId(appname,username);
-
-        var historyMod = jagg.module("approval-history");
-        var historyResult = historyMod.getOperatorApprovedSubscriptionsByApplicationId(applicationId);
-        
-        for(var i =0;i<result.subscriptions.length;i++){
-
-            result.subscriptions[i]['operators'] = '';
-            var api = result.subscriptions[i].apiName;
-
-            if(historyResult.data.operatorSubsApprovedHistory.length == 0){
-
-                result.subscriptions[i]['operators'] = 'PENDING';
-            } else {
-
-                for(var j =0;j<historyResult.data.operatorSubsApprovedHistory.length;j++){
-
-                    if(api == historyResult.data.operatorSubsApprovedHistory[j][0].apiName){
-
-                        if(result.subscriptions[i]['operators'] == ''){
-
-                            result.subscriptions[i]['operators'] = historyResult.data.operatorSubsApprovedHistory[j][0].operatorname + ' - ' + historyResult.data.operatorSubsApprovedHistory[j][0].substatus;
-                        } else {
-
-                            result.subscriptions[i]['operators'] = result.subscriptions[i]['operators'] + "<br>" + historyResult.data.operatorSubsApprovedHistory[j][0].operatorname + ' - ' + historyResult.data.operatorSubsApprovedHistory[j][0].substatus;
-                        }
-                        
-                    }
-                }
-            }
-        }
 
         if (result.error) {
             if (result.error.javaException instanceof org.wso2.carbon.apimgt.api.ApplicationNotFoundException) {
@@ -314,8 +277,7 @@ include("/jagg/jagg.jag");
         } else {
             obj = {
                 error:false,
-                apis:result.subscriptions,
-                depType:storeMod.getDeploymentType()
+                apis:result.subscriptions
             }
         }
         print(obj);

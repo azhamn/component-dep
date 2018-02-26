@@ -330,10 +330,5 @@
     "subscription": "subscription",
     "subscriptionStatus": "subscriptionStatus",
     "tenants": "Visible to Tenants",
-    "timeWarn": "timeWarn",
-    "operators" : "Operators",
-    "operatorstatus" : "Operator Approval Status",
-    "hubadminstatus" : "Hub Admin Approval Status",
-    "pulishertatus" : "Publisher Approval Status",
-    "adminstatus" : "Admin Approval Status"
+    "timeWarn": "timeWarn"
 }

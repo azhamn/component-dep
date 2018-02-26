@@ -95,12 +95,12 @@ $(document).ready(function () {
 	        //$('#messageModal').html($('#login-data').html());
 	        //$('#messageModal').modal('show');
 	        if ($(this).attr("href")) {
-	        	$.cookie("goto_url",$(this).attr("href"));
+	        	$.cookie("goto_url",$(this).attr("href"),{secure:true});
 	        } else {
 	        	if ($('#tenant').val() && $('#tenant').val() != "null") { 
-	        		$.cookie("goto_url",siteContext + '?tenant=' + $('#tenant').val());
+	        		$.cookie("goto_url",siteContext + '?tenant=' + $('#tenant').val(),{secure:true});
 	        	} else {
-	        		$.cookie("goto_url",siteContext);
+	        		$.cookie("goto_url",siteContext,{secure:true});
 	        	}
 	        }
 	        

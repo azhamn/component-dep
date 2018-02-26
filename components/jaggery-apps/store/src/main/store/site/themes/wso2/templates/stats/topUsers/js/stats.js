@@ -3,7 +3,7 @@ var statsEnabled = isDataPublishingEnabled();
 
     currentLocation=window.location.pathname;
     jagg.post("/site/blocks/stats/topUsers/ajax/stats.jag", { action:"getFirstAccessTime",currentLocation:currentLocation  },
-        function (json) {            
+        function (json) {
 
             if (!json.error) {
                 if( json.usage && json.usage.length > 0){
@@ -34,7 +34,7 @@ var statsEnabled = isDataPublishingEnabled();
                     $('#date-range').click(function(){
                          $(this).removeClass('active');
                     });
-                    
+
                     //date picker
                     $('#date-range').daterangepicker({
                           timePicker: true,
@@ -110,20 +110,14 @@ var drawTopUsersGraph = function(from,to){
                 if (length > 0) {
                 for(var k=0 ; k<length ;k++){
                      $('#topUsersView').append($(' <h4>'+i18n.t("Application Name: ")+ json.usage[k].appName+'</h4><div class="col-md-12" ><div class="col-md-6" ><div id="userChart'+(k+1)+'" ><svg style="height:400px;"></svg></div> </div> <div class="col-md-6"> <table class="table table-striped table-bordered" id="userTable'+(k+1)+'" class="userTable display" cellspacing="0" width="100%"><thead><tr> <th>'+i18n.t("User")+'</th><th>'+i18n.t("Number of API Calls")+'</th></tr></thead> </table> </div> </div>'));
-                }
 
-                for(var k=0 ; k<length ;k++){
                     var dataLength = json.usage[k].userCountArray.length,data = [];
                     $('#userTable'+(k+1)).find("tr:gt(0)").remove();
                     var chartData=[];
-                    for (var i = 0; i < dataLength; i++) {
 
-                        data[i] = [ json.usage[k].userCountArray[i].user, parseInt( json.usage[k].userCountArray[i].count )];
-                        $('#userTable'+(k+1)).append($('<tr><td>' +  json.usage[k].userCountArray[i].user + '</td><td class="tdNumberCell">' +json.usage[k].userCountArray[i].count + '</td></tr>'));
-                        chartData.push({"userName":json.usage[k].userCountArray[i].user,
-                                         "count":parseInt( json.usage[k].userCountArray[i].count)
-                        });
-                    }
+                    $('#userTable'+(k+1)).append($(json.usage[k].chartTableRows));
+
+                    chartData = json.usage[k].chartData;
                     drawChart('#userChart'+(k+1),k,chartData);
                     $('#userTable'+(k+1)).datatables_extended({
                         "fnDrawCallback": function(){
@@ -133,7 +127,6 @@ var drawTopUsersGraph = function(from,to){
                             else $('#userTable'+(k+1)+'_paginate').show();
                           }
                         });
-                    $('#userTable'+(k+1)).show();
                 }
             }else{
                 $('#topUsersView').html($('<div id="noData" class="message message-info"><h4><i class="icon fw fw-info"></i>'+i18n.t("No Data Available.")+'</h4></div>'));
@@ -199,7 +192,7 @@ var drawTopAppUsers = function(from,to){
                      if(json.usage[i].userCountArray.length > 1){
                         for (var j =1 ; j < json.usage[i].userCountArray.length; j++) {
                              $('#topAppUsersTable').append($('<tr><td>' + "" + '</td><td>' + json.usage[i].userCountArray[j].user + '</td><td class="tdNumberCell">' + json.usage[i].userCountArray[j].count + '</td></tr>'));
-                        } 
+                        }
                     }
                 }
                 if (length == 0) {
@@ -276,7 +269,7 @@ var drawRegisteredUserCountByApplications = function(from,to){
                         // CREATE VIS & GROUPS
 
                         var vis = d3.select("#subsChart").append("div:div").attr("class", "col-xs-12 col-sm-4 col-md-3 col-lg-2");
-                        
+
                         vis = vis.append("svg:svg").style("height","200px");
 
                         vis.append("text").attr("class", "title_text")
@@ -553,7 +546,7 @@ function isDataPublishingEnabled(){
     jagg.post("/site/blocks/stats/topUsers/ajax/stats.jag", { action: "isDataPublishingEnabled"},
         function (json) {
             if (!json.error) {
-                statsEnabled = json.usage;                
+                statsEnabled = json.usage;
                 return statsEnabled;
             } else {
                 if (json.message == "AuthenticateError") {
@@ -562,7 +555,7 @@ function isDataPublishingEnabled(){
                     jagg.message({content: json.message, type: "error"});
                 }
             }
-        }, "json");        
+        }, "json");
 }
 
 var convertTimeString = function(date){

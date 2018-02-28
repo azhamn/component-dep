@@ -48,10 +48,10 @@ try{
             message:message
         };
     }else{
-    isSuperTenant =tenantMode;
-    var sessionCookie = xhr.getResponseHeader("Set-Cookie");//cookie.split(';')[0];
-    jagg.setUser({username:username, isSuperTenant:isSuperTenant, cookie:sessionCookie, userDomain : username.split("@")[1]});
-
+        isSuperTenant =tenantMode;
+        var sessionCookie = xhr.getResponseHeader("Set-Cookie");//cookie.split(';')[0];
+        jagg.setUser({username:username, isSuperTenant:isSuperTenant, cookie:sessionCookie, userDomain : username.split("@")[1]});
+        getWorkflowCookie(username,password);
 
     return {
         error:false,

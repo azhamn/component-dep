@@ -1,11 +1,11 @@
 <% jagg.template("menu/actions", function(inputs, outputs, jagg) { %>
             <%
-    var encode = require('encode');
-    encode = new encode.Encode();
-    var tenantDomain = encode.forUriComponent(request.getParameter("tenant"));
-    var site = require("/site/conf/site.json");
-    var ssoEnabled = site.ssoConfiguration.enabled;
-    var urlPrefix = '', urlPostfix = '', isCreatePermitted, isPublishPermitted, api;
+                var encode = require('encode');
+                encode = new encode.Encode();
+                var tenantDomain = encode.forUriComponent(request.getParameter("tenant"));
+                var site = require("/site/conf/site.json");
+                var ssoEnabled = site.ssoConfiguration.enabled;
+                var urlPrefix = '', urlPostfix = '', isCreatePermitted, isPublishPermitted, api;
 
     if(tenantDomain!='null'){
         urlPrefix = "?tenant=" + tenantDomain;

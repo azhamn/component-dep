@@ -1005,7 +1005,7 @@ $(document).ready(function(){
                 		$('.add-tags-error').hide();
                         $('.add-tags-error').html('');
                         // @todo: param_string
-                        $('.tags-error').html('The tag "' + tagName + '" contains one or more illegal characters  (~ ! @ #  ; % ^ * + = { } | &lt; &gt;, \' " \\ ) .');
+                        $('.tags-error').html('The tag contains one or more illegal characters  (~ ! @ #  ; % ^ * + = { } | &lt; &gt;, \' " \\ ) .');
                         return '';
                 }));
             }

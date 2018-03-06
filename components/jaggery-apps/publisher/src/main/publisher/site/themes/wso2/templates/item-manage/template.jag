@@ -558,7 +558,7 @@
                                 <td>
                                     <div class="environments_checkbox">
                                         <label class="checkbox">
-                                            <input type="checkbox" value="<%=environmentsList[i].name%>" class="env">
+                                            <input type="checkbox" value="<%=environmentsList[i].name%>" class="env" name="gateways">
                                             <span class="helper"></span>
                                         </label>
                                     </div>
@@ -575,7 +575,8 @@
                                              <td>
                                                 <div class="environments_checkbox">
                                                     <label class="checkbox">
-                                                        <input type="checkbox" value="<%=environmentsList[i].name%>" checked class="env">
+                                                        <input type="checkbox" value="<%=environmentsList[i].name%>"
+                                                        checked class="env" name="gateways">
                                                         <span class="helper"></span>
                                                     </label>
                                                 </div>
@@ -589,7 +590,8 @@
                                              <td>
                                                 <div class="environments_checkbox">
                                                     <label class="checkbox">
-                                                        <input type="checkbox" value="<%=environmentsList[i].name%>" class="env">
+                                                        <input type="checkbox" value="<%=environmentsList[i].name%>"
+                                                        class="env" name="gateways">
                                                         <span class="helper"></span>
                                                     </label>
                                                 </div>
@@ -635,7 +637,7 @@
                                 <div class="form-group">
                                     <label class="control-label col-sm-3" for="bizOwner"><%=i18n.localize("Business Owner")%>:</label>
                                     <div class="controls col-sm-8">
-                                         <input type="text" class=" validInput form-control businessInfo" id="bizOwner" name="bizOwner" value="<%=api.bizOwner%>"/>
+                                         <input type="text" class=" validInput form-control businessInfo" id="bizOwner" name="bizOwner" value="<%=encode.forHtmlAttribute(api.bizOwner)%>"/>
                                     </div>
                                 </div>
                                  <div class="form-group">
@@ -647,7 +649,7 @@
                                  <div class="form-group">
                                     <label class="control-label col-sm-3" for="techOwner"><%=i18n.localize("Technical Owner")%>:</label>
                                     <div class="controls col-sm-8">
-                                         <input type="text" class=" validInput form-control businessInfo" id="techOwner" name="techOwner" value="<%=api.techOwner%>"/>
+                                         <input type="text" class=" validInput form-control businessInfo" id="techOwner" name="techOwner" value="<%=encode.forHtmlAttribute(api.techOwner)%>"/>
                                     </div>
                                 </div>
                                  <div class="form-group">
@@ -705,6 +707,9 @@
                                 <%}%>
 
                                 <input type="reset" class="btn btn-secondary" value="<%=i18n.localize("Cancel")%>" onclick="javascript:window.location.href='./'" />
+                                <label id="gateway_error" class="bg-warning hide" style="display: block;padding:
+                                10px; border-radius: 5px;margin-top:10px;"><%=i18n
+                                .localize("Some of the gateway environments are not selected.")%></label>
                             </div>
                     </div>
                 </div>
@@ -1013,9 +1018,8 @@
             }
         });
 
-        var thisID='';
-        $('#publish_api').click(function(e){
-            $("body").on("api_saved", publish_api);
+        var submitForm = function(){$("body").on("api_saved", publish_api);
+            $('#messageModal').modal('hide');
             thisID = $(this).attr('id');
                 if(!$("#backend_tps_specify").is(":checked")) {
                 // Setting text field values to null if check box is not selected.
@@ -1023,6 +1027,20 @@
                     $('#sandboxTps').val(null);
             }
             $("#manage_form").submit();
+            };
+
+        var thisID='';
+        $('#publish_api').on("click",function(e){
+            var isChecked = false;
+            $("input[name='gateways']:checked").each(function() {
+                isChecked = true;
+            });
+            if(!isChecked){
+                $("#messageModal div.modal-footer").html("");
+                jagg.message({content:"<%=i18n.localize('Gateways Unchecked')%>", type:"confirm",anotherDialog:true, okCallback:submitForm});
+            } else{
+                submitForm();
+            }
         });
 
         $('#save_api').click(function(e){

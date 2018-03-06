@@ -1,11 +1,14 @@
 <%
 include("/jagg/jagg.jag");
 
+(function () {
+
 if(jagg.getUser() == null){
     print({
         error:true,
         message:'timeout'
     });
+        return;
 }
 
 response.contentType = "text/plain; charset=UTF-8";
@@ -21,7 +24,7 @@ if(action == "session"){
 	url = url.trim();
 	var data = { };
 	var content = get(url, data );
-	//@todo need to validate returned swagger v2
+        
 	//check for key words to validate if it is a swagger
 	// we cannot do a full validation since we have to tolerate invalid swagger importing
 	var keywords = [ /swagger/i, /info/i , /paths/i, /version/i ];
@@ -35,10 +38,13 @@ if(action == "session"){
 	if(valid){
 		print(swaggerJson);
 	}else{
-		print("undefined");
+            print({
+                error: true,
+                message: 'Invalid swagger definition'
+            });
+            return;
 	}
-	
-	//@todo Error reporting
 
 }
+}());
 %>

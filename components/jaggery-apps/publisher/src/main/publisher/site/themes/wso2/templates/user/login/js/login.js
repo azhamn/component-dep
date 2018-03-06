@@ -9,8 +9,8 @@ var login = function () {
                       var currentHref=window.location.search;
                       var requestedPage=getParameterByName("requestedPage");
                       var queryParam;
-                      if(requestedPage){
-                        window.location.href=requestedPage;
+                      if(requestedPage && requestedPage.startsWith(siteContext)){
+                          window.location.href = requestedPage;
                       } else {
                         if(currentHref.indexOf("tenant")>-1){queryParam=currentHref;}
                         else{queryParam='';}

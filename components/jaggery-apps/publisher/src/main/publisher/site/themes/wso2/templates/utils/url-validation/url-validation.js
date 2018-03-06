@@ -56,7 +56,12 @@ $(document).ready(function(){
                                 }
                               } else {
                                     if (result.response.statusCode == null) { //When an exception is thrown from sendHttpHEADRequest method
-                                        $(btn).parent().parent().after(' <span class="label label-danger url_validate_label"><i class="fw fw-cancel icon-white" title="invalid url"></i> ' + i18n.t('Invalid') + '. ' +  result.response.response + '</span>');
+                                        $(btn).parent().parent()
+                                            .after(' <span class="label label-danger url_validate_label">' +
+                                                '<i class="fw fw-cancel icon-white" title="invalid url"></i> '
+                                                + ' <span class ="url_validate_message"></span></span>');
+                                        jQuery( '.url_validate_message' ).text( i18n.t('Invalid') + '. '
+                                            +  result.response.response);
                                     } else {
                                         if (result.response.isContainUriTemplatesOnly) {
                                             $(btn).parent().parent().after(' <span class="label label-danger url_validate_label"><i class="fw fw-cancel icon-white" title="missing-complete-url>"></i> ' + i18n.t('Cannot test the endpoint provided. Please specify the full URL for testing.') + '</span>');

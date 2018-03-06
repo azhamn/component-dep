@@ -22,12 +22,38 @@
         if (!Boolean(isLogoutResponse)) {
             var MultitenantConstants = Packages.org.wso2.carbon.utils.multitenancy.MultitenantConstants;
             //Validate the saml response schema-check the number of response elements is 1 and check the number of assertions
-            //is equal to 1  and check the assertion validity period and check audience restrictions
+            //is equal to 1
             var isResponseValid = ssoRelyingParty.validateSAMLResponseSchema(samlResponse);
             if (!Boolean(isResponseValid)) {
                  log.error("SAML response schema verification is failed.");
                  response.sendRedirect("../site/pages/error-pages/401.html");
                  return;
+            }
+
+            // validating the assertion validity period
+            if(site.ssoConfiguration.verifyAssertionValidityPeriod === 'true'){
+               var timestampSkew=site.ssoConfiguration.timestampSkewInSeconds;
+               if(timestampSkew==undefined){
+                timestampSkew="300";
+               }
+               ssoRelyingParty.setProperty("timestampSkewInSeconds", timestampSkew);
+               var isAssertionValidityPeriodValid = ssoRelyingParty.validateAssertionValidityPeriod(samlResponse);
+               if (!Boolean(isAssertionValidityPeriodValid)) {
+                    log.error("SAML response assertion validity period verification is failed.");
+                    response.sendRedirect("../site/pages/error-pages/401.html");
+                    return;
+               }
+               }
+
+               // validating the audience restrictions
+               var isAudienceRestrictionEnabled=site.ssoConfiguration.audienceRestrictionsEnabled;
+               if(isAudienceRestrictionEnabled === 'true'){
+                  var isAudienceRestrictionsValid = ssoRelyingParty.validateAudienceRestrictions(samlResponse);
+                  if (!Boolean(isAudienceRestrictionsValid)) {
+                  log.error("SAML response audience restrictions verification is failed.");
+                  response.sendRedirect("../site/pages/error-pages/401.html");
+                  return;
+               }
             }
 
             var fullUserName = ssoRelyingParty.getSAMLResponseNameId(samlResponse);
@@ -36,6 +62,7 @@
             if(fullUserName != null){
                 domainName = MultitenantUtils.getTenantDomain(fullUserName);
             }
+
             // relay state value should be a valid value, this value is mapped with request uri.
             var relayState = request.getParameter("RelayState");
             var requestedURI = ssoRelyingParty.getRelayStateProperty(relayState);
@@ -44,6 +71,7 @@
                 response.sendRedirect("../site/pages/error-pages/401.html");
                 return;
             }
+
 
             // validating the signature
             if(site.ssoConfiguration.responseSigningEnabled === 'true'){

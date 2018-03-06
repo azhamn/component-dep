@@ -314,8 +314,8 @@ include("/jagg/jagg.jag");
         } else {
             obj = {
                 error:false,
-                apis:result.subscriptions,
-                depType:storeMod.getDeploymentType()
+		depType:storeMod.getDeploymentType(),
+                apis:result.subscriptions
             }
         }
         print(obj);

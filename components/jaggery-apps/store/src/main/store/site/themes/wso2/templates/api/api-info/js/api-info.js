@@ -4,19 +4,14 @@ function triggerSubscribe(deploymentType) {
     $.ajaxSetup({
         contentType: "application/x-www-form-urlencoded; charset=utf-8"
     });
-    jagg.sessionAwareJS({
-        redirect: '/site/pages/index.jag'
-    });
+    jagg.sessionAwareJS({redirect:'/site/pages/index.jag'});
     if (!jagg.loggedIn) {
         return;
     }
     var applicationId = $("#application-list").val();
     var applicationName = $("#application-list option:selected").text();
     if (applicationId == "-" || applicationId == "createNewApp") {
-        jagg.message({
-            content: i18n.t('Please select an application before subscribing'),
-            type: "info"
-        });
+        jagg.message({content:i18n.t('Please select an application before subscribing'),type:"info"});
         return;
     }
     var api = jagg.api;
@@ -145,10 +140,7 @@ function triggerSubscribe(deploymentType) {
                                         $('#messageModal').modal("hide");
                                         window.location.reload();
                                     } else {
-                                        jagg.message({
-                                            content: result.message,
-                                            type: "error"
-                                        });
+                              jagg.message({content:result.message,type:"error"});
                                     }
                                 }, "json");;
                             });
@@ -180,10 +172,7 @@ function triggerSubscribe(deploymentType) {
             }
 
         } else {
-            jagg.message({
-                content: result.message,
-                type: "error"
-            });
+          jagg.message({content:result.message,type:"error"});
             //$('#messageModal').html($('#confirmation-data').html());
             /*$('#messageModal h3.modal-title').html('API Provider');
               $('#messageModal div.modal-body').html('\n\nSuccessfully subscribed to the API.\n Do you want to go to the subscription page?');
@@ -230,10 +219,7 @@ $(document).ready(function() {
                 }
                 $('.your_rating').text(parseInt(result.rating) + "/5");
             } else {
-                jagg.message({
-                    content: result.message,
-                    type: "error"
-                });
+            jagg.message({content:result.message,type:"error"});
             }
         }, "json");
     });
@@ -252,10 +238,7 @@ $(document).ready(function() {
                 $('.average-rating').hide();
                 $('.your_rating').text("N/A");
             } else {
-                jagg.message({
-                    content: result.message,
-                    type: "error"
-                });
+            jagg.message({content:result.message,type:"error"});
             }
         }, "json");
     });

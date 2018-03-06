@@ -25,11 +25,22 @@ var subscriptionResponse = Packages.org.wso2.carbon.apimgt.api.model.Subscriptio
             status:jsonSubsResponse
         }
     } catch (e) {
-        log.error(e.message);
+        outputErrorMessage = e.message;
+        log.error(outputErrorMessage, e);
+        var javaException = e.javaException;
+        // if exception is related to workflows, propagate the workflow related error message to UI
+        while (javaException) {
+            if (javaException instanceof org.wso2.carbon.apimgt.impl.workflow.WorkflowException) {
+                outputErrorMessage = javaException.message;
+                break;
+            }
+            javaException = javaException.getCause();
+        }
+
         return {
             error:true,
             status:false,
-            message:e.message
+            message:outputErrorMessage
         };
     }
 };

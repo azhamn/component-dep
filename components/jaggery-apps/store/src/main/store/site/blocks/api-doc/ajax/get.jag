@@ -47,9 +47,11 @@ var log = new Log();
             response.sendError(404);
         } else {
         var url = request.getRequestURL();
-        var host = getLocation(url).host;
+        var match = getLocation(url);
+        var host = match.host;
+        host = validateHostName(match, host);
         var port = getLocation(url).port;
-        var accessProtocol = getLocation(url).protocol;
+        var accessProtocol = match.protocol;
         var envName = request.getParameter("envName");
         var tenantDomain = "";
         var tenantID = -1234;
@@ -189,11 +191,21 @@ var log = new Log();
         var paths = {}; //fix for /*, {url-template}*
         for (var property in jsonObj.paths) {
             if (jsonObj.paths.hasOwnProperty(property)) {
+                var isEndsWithSlashStar = false;
+                // Check if resource ends with /*
+                if (property.indexOf("/*", this.length - "/*".length) !== -1) {
+                    log.debug("Ends with /*");
+                    isEndsWithSlashStar = true;
+                }
+                log.debug("Resource " + stringify(property));
+
+                // Remove any * characters that may exist in resource but not the trailing /*
                 var tempResource = property.replace("*","");
-                if(tempResource.lastIndexOf("/")==(tempResource.length-1)){
+                if( isEndsWithSlashStar ){
                    tempResource += "*";
                 }
-            paths[tempResource] = jsonObj.paths[property];            }
+                paths[tempResource] = jsonObj.paths[property];
+            }
         }
         jsonObj.paths = paths;
         print(JSON.stringify(jsonObj));
@@ -225,7 +237,7 @@ function sendReceive (httpMethod,data,url){
         default :
             log.error("Error in the programme flow.");
     }
-   
+    log.debug("---------------------:" + stringify(response));
     if(response.data.Error) {
         session.put("get-status", response.data.Error.errorMessage);
     } else {
@@ -263,4 +275,22 @@ function getLocation(href) {
         hash: match[7]
     }
 }
+
+function validateHostName(match, host) {
+    var CarbonUtils = Packages.org.wso2.carbon.utils.CarbonUtils;
+    var carbonUtils = new CarbonUtils();
+    var hostName = carbonUtils.getServerConfiguration().getFirstProperty("HostName");
+    var process = require('process');
+    if ((hostName != null && match.host.split(":")[0].equals(hostName.split(":")[0])) || match.host.split(":")[0].equals(process.getProperty('carbon.local.ip').split(":")[0])) {
+       return host;
+    } else {
+       // Possible HOST Header Attack is identified. Hence, rewritting to defaul host in configuration.
+        if (hostName) {
+            host = hostName + ":" + process.getProperty('mgt.transport.https.port');
+        } else {
+            host = process.getProperty('carbon.local.ip') + ":" + process.getProperty('mgt.transport.https.port');
+        }
+        return match.protocol + "//" + host;
+    }
+};
 %>

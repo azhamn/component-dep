@@ -76,11 +76,7 @@ var result;
 %>
             <div class="page-header">
 
-                <script>
-                    var isRatingActivated = <%=isRatingActivated%>,
-                        context = '<%= jagg.getSiteContext()%>',
-                        theme = '<%=jagg.getUserTheme().base%>',
-                        user = <%=(user != null)%>
+    <script>var isRatingActivated = <%=isRatingActivated%>, context = '<%= jagg.getSiteContext()%>',theme = '<%=jagg.getUserTheme().base%>', user = <%=(user != null)%>
                     var existingRating = <%=api.rating%>
                 </script>
                 <h2 class="truncate-children"><span><%=encode.forHtml(api.name)%> - <%=encode.forHtml(api.version)%><span></h2>
@@ -99,14 +95,8 @@ var result;
 
     <ul class="breadcrumb">
         <li><a href="<%=jagg.getAbsoluteUrl("/site/pages/list-apis.jag?")%><%=jagg.getTenantURLPrefix()%>" title="<%=i18n.localize("List APIs")%>"><%=i18n.localize("APIs groups")%></a> <span class="divider">/</span></li>
-                    <li>
-                        <a title="<%=i18n.localize(" Tags ")%>" href="<%=jagg.getAbsoluteUrl(groupPath)%><%=urlPrefix%>">
-                            <%= encode.forHtml(tagDisplayName) %>
-                        </a> <span class="divider">/</span></li>
-                    <li class="active">
-                        <%= encode.forHtml(api.name)%> -
-                            <%= encode.forHtml(api.version)%>
-                    </li>
+        <li><a title="<%=i18n.localize("Tags")%>" href="<%=encode.forHtml(jagg.getAbsoluteUrl(groupPath))%><%=urlPrefix%>"><%= encode.forHtml(tagDisplayName) %></a> <span class="divider">/</span></li>
+        <li class="active"><%= encode.forHtml(api.name)%> - <%= encode.forHtml(api.version)%></li>
                     </ul>
                     <%
                 }
@@ -123,9 +113,7 @@ var result;
                                         <div class="square-element setbgcolor">
                                             <div class="api-name-icon"></div>
                                             <div style="display: none">
-                                                <a href="" title="api name" class="api-name">
-                                                    <%=encode.forHtml(api.name)%>
-                                                </a>
+                                            <a href="" title="api name" class="api-name"><%=encode.forHtml(api.name)%></a>
                                             </div>
                                         </div>
                                         <% } else { %>
@@ -145,25 +133,19 @@ var result;
                                             <div class="form-group">
                                                 <label class="col-xs-4 col-sm-4 control-label"><strong><%=i18n.localize("Version:")%></strong></label>
                                                 <div class="col-xs-8 col-sm-8">
-                                                    <p class="form-control-static">
-                                                        <%=api.version%>
-                                                    </p>
+                                              <p class="form-control-static"><%=api.version%></p>
                                                 </div>
                                             </div>
                                             <div class="form-group">
                                                 <label class="col-xs-4 col-sm-4 control-label"><strong><%=i18n.localize("By:")%></strong></label>
                                                 <div class="col-xs-8 col-sm-8">
-                                                    <p class="form-control-static">
-                                                        <%=displayOwner %>
-                                                    </p>
+                                            <p class="form-control-static"><%=displayOwner %></p>
                                                 </div>
                                             </div>
                                             <div class="form-group">
                                                 <label class="col-xs-4 col-sm-4 control-label"><strong><%=i18n.localize("Updated:")%></strong></label>
                                                 <div class="col-xs-8 col-sm-8">
-                                                    <p class="form-control-static">
-                                                        <%=api.updatedDate%>
-                                                    </p>
+                                            <p class="form-control-static"><%=api.updatedDate%></p>
                                                 </div>
                                             </div>
                                             <div class="form-group">
@@ -199,6 +181,7 @@ var result;
                                 </div>
                             </div>
                         </div>
+
 
 
                         <div class="col-xs-12 col-sm-12 col-md-8 col-lg-5 col-md-height col-md-top">
@@ -261,10 +244,7 @@ var result;
                                                     <select id="application-list" class="form-control">
                                                 <%if(!subscribedToDefault){%>
                                                     <option value="-"><%=i18n.localize("Select Application...")%></option>
-                                                <%}
-
-                                                %>
-                                                
+                                                <%}%>
                                                 <option value="createNewApp"><%=i18n.localize("New Application...")%></option>
                                                 <optgroup label="<%=i18n.localize("My Applications")%>">
                                                    <%
@@ -323,13 +303,9 @@ var result;
                                         %>
                                     </div>
                                 <%} %>
-                                -->
-                                            <input type="hidden" id="tiers-list" value="Default" />
-
-
-                                            <button type="button" onclick="triggerSubscribe('<%=result%>')" id="subscribe-button" <%if(!tiersAvailable){%>disabled="disabled"<%}%>
+                                <button type="button" onclick="triggerSubscribe()" id="subscribe-button" <%if(!tiersAvailable){%>disabled="disabled"<%}%>
                                             class="btn btn-primary btn-mobile<% if(!user) { %>need-login<% } %>">
-                                    <span class="icon fw-stack"
+                                    <span class="icon fw-stack">
                                         <i class="fw fw-subscribe fw-stack-1x"></i>
                                         <i class="fw fw-circle-outline fw-stack-2x"></i>
                                     </span>
@@ -381,11 +357,7 @@ var result;
             }
                       var path = api.redirectURL + "/apis/info?name=" + api.name + "&version=" + api.version + "&provider=" + api.apiOwner +"&tenant=" + tenantDomain;
                     %>
-                                    <div id="store-redirect-link1" class="span4 title-section">
-                                        <a class="btn btn-primary" title="<%=i18n.localize(" Visit Publisher Store ")%>" href="<%=path%>" target="_">
-                                            <%=i18n.localize("Visit Publisher Store")%>
-                                        </a>
-                                    </div>
+                    	<div id="store-redirect-link1" class="span4 title-section"><a class="btn btn-primary" title="<%=i18n.localize("Visit Publisher Store")%>" href="<%=path%>" target="_"><%=i18n.localize("Visit Publisher Store")%></a></div>
                                     <%}%>
                             </div>
                         </div>

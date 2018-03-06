@@ -408,6 +408,7 @@ $("#subscription-actions").each(function(){
               }
 			},
             { "data": "subscribedTier" },
+	    { "data": "subStatus" },
             { "data": "subStatus" }, //Hub Admin Status
             { "data": "operators" }, // Operator Status
             { "data": "subStatus" }, // Publisher Status

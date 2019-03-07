@@ -308,42 +308,6 @@ CREATE TABLE IF NOT EXISTS `mo_ussd_subscription` (
   PRIMARY KEY (`mo_ussd_request_did`)
 ) ENGINE=InnoDB;
 
-CREATE TABLE IF NOT EXISTS `mdtxmsgtype` (
-  `msgtypedid` int(11) NOT NULL AUTO_INCREMENT,
-  `msgtype` varchar(45) NOT NULL,
-  PRIMARY KEY (`msgtypedid`),
-  UNIQUE KEY `msgtype_UNIQUE` (`msgtype`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
-
-CREATE TABLE IF NOT EXISTS `mdtrequestmessage` (
-  `messegeId` int(11) NOT NULL AUTO_INCREMENT,
-  `msgtypeId` int(11) NOT NULL,
-  `mdtrequestId` varchar(45) DEFAULT NULL,
-  `internalclientrefcode` varchar(100) DEFAULT NULL,
-  `message` blob,
-  `clientrefcode` varchar(45) DEFAULT NULL,
-  `clientrefval` varchar(45) DEFAULT NULL,
-  `reportedtime` bigint(20) DEFAULT NULL,
-  PRIMARY KEY (`messegeId`),
-  KEY `fk_mdtrequestmessage_1_idx` (`msgtypeId`),
-  KEY `index_msgtypeId` (`msgtypeId`),
-  KEY `index_clientrefcode` (`clientrefcode`),
-  CONSTRAINT `fk_mdtrequestmessage_1` FOREIGN KEY (`msgtypeId`) REFERENCES `mdtxmsgtype` (`msgtypedid`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=228911 DEFAULT CHARSET=latin1;
-
-CREATE TABLE IF NOT EXISTS `spendlimitdata` (
-  `msgType` int(11) DEFAULT NULL,
-  `groupName` varchar(255) DEFAULT NULL,
-  `consumerKey` varchar(255) DEFAULT NULL,
-  `operatorId` varchar(255) DEFAULT NULL,
-  `msisdn` varchar(255) DEFAULT NULL,
-  `amount` decimal(40,15) NOT NULL,
-  `currentDateTime` bigint(20) DEFAULT NULL,
-  `effectiveTime` bigint(20) DEFAULT NULL,
-  KEY `index_msisdn` (`msisdn`),
-  KEY `index_msgType` (`msgType`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
 
 CREATE TABLE IF NOT EXISTS `workflow_reference` (
   `workflow_ref_id` varchar(255) NOT NULL,
@@ -464,7 +428,7 @@ CREATE TABLE IF NOT EXISTS `sp_quota_limit` (
   `idsp_quota_limit` int(11) NOT NULL AUTO_INCREMENT,
   `serviceProvider` varchar(45) DEFAULT NULL,
   `operatorName` varchar(45) DEFAULT NULL,
-  `application` varchar(45) DEFAULT NULL,
+  `application` int(11) DEFAULT NULL,
   `apiName` varchar(45) DEFAULT NULL,
   `quota_limit` int(11) DEFAULT NULL,
   `fromDate` date DEFAULT NULL,
@@ -475,3 +439,20 @@ CREATE TABLE IF NOT EXISTS `sp_quota_limit` (
   `updateddate` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`idsp_quota_limit`)
 ) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=utf8;
+
+
+
+--
+-- Operator Brand for OperatorCode.
+--
+CREATE TABLE `operator_brands` (
+  `id` int(20) NOT NULL AUTO_INCREMENT,
+  `operatorcode` varchar(45) DEFAULT NULL,
+  `brand` varchar(255) DEFAULT NULL,
+  `created` varchar(25) DEFAULT NULL,
+  `created_date` timestamp NULL DEFAULT NULL,
+  `lastupdated` varchar(25) DEFAULT NULL,
+  `lastupdated_date` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `operatorcode` (`operatorcode`)
+) ENGINE=InnoDB;

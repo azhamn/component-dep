@@ -26,6 +26,8 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.cache.Cache;
 import javax.cache.Caching;
+
+import com.wso2telco.dep.operatorservice.exception.OperatorServiceException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import com.wso2telco.core.dbutils.DbUtils;
@@ -112,16 +114,19 @@ public class OperatorDAO {
 			if (con == null) {
 				throw new Exception("Connection not found");
 			}
-			StringBuilder queryString = new StringBuilder("SELECT oa.id id, oe.api, oa.applicationid, oa.operatorid,")
-												.append("o.operatorname,o.refreshtoken, o.tokenvalidity, o.tokentime,")
-												.append("o.token, o.tokenurl, o.tokenauth,oe.operatorid ")
-												.append(" FROM  OPERATORAPPS oa, OPERATORS  o ,ENDPOINTAPPS e, OPERATORENDPOINTS oe ")
-												.append(" WHERE oa.operatorid = o.id AND oa.applicationid=e.applicationid AND ")
-												.append(" e.endpointid = oe.id AND oe.id = e.endpointid AND e.isactive = 1 AND oa.isactive = 1 ");
+			StringBuilder queryString = new StringBuilder("SELECT oa.id id, o.operatorname, oe.api, ")
+					.append("oa.applicationid, oa.operatorid, o.refreshtoken,")
+					.append("o.tokenvalidity, o.tokentime, o.token,")
+					.append("o.tokenurl, o.tokenauth, oe.operatorid ")
+					.append("FROM   operatorapps oa, operatorendpoints oe,")
+					.append("endpointapps e, operators o ")
+					.append("WHERE  oe.operatorid = oa.operatorid ")
+					.append("AND   oa.isactive=1 AND e.isactive = 1 ")
+					.append("AND    oe.id = e.endpointid ")
+					.append("AND    o.id = oa.operatorid ")
+					.append("AND    oa.applicationid = e.applicationid ");
 
 			ps = con.prepareStatement(queryString.toString());
-
-			this.log.debug("sql query in getApplicationOperators : " + ps);
 			rs = ps.executeQuery();
 			while (rs.next()) {
 				OperatorApplicationDTO oper = new OperatorApplicationDTO();
@@ -147,6 +152,132 @@ public class OperatorDAO {
 		}
 		return operators;
 	}
+
+	/**
+	 * Retrieve operator list with Token Details.
+	 *
+	 * @return list with Operator details
+	 * @throws OperatorServiceException
+	 */
+	public List<Operator> retrieveOperatorsWithTokenDetails() throws OperatorServiceException {
+
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		List<Operator> operatorList = new ArrayList<Operator>();
+
+		try {
+
+			conn = DbUtils.getDbConnection(DataSourceNames.WSO2TELCO_DEP_DB);
+
+			String query = "SELECT " +
+					"ID, operatorname, description, token, tokenurl, " +
+					"tokenauth, refreshtoken, tokenvalidity, tokentime " +
+					"FROM " +
+					OparatorTable.OPERATORS.getTObject();
+
+			ps = conn.prepareStatement(query);
+
+			if (log.isDebugEnabled()) {
+				log.debug("sql query in retrieveOperatorsWithTokenDetails : " + ps);
+			}
+			rs = ps.executeQuery();
+
+			while (rs.next()) {
+
+				Operator operator = new Operator();
+				operator.setOperatorId(rs.getInt("ID"));
+				operator.setOperatorName(rs.getString("operatorname"));
+				operator.setOperatorDescription(rs.getString("description"));
+				operator.setToken(rs.getString("token"));
+				operator.setTokenurl(rs.getString("tokenurl"));
+				operator.setTokenauth(rs.getString("tokenauth"));
+				operator.setRefreshtoken(rs.getString("refreshtoken"));
+				operator.setTokenvalidity(rs.getLong("tokenvalidity"));
+				operator.setTokentime(rs.getLong("tokentime"));
+
+				operatorList.add(operator);
+			}
+		} catch (SQLException e) {
+
+			log.error("database operation error in retrieveOperatorsWithTokenDetails : ", e);
+			throw new OperatorServiceException("Error occurred while fetching results");
+		} catch (Exception e) {
+
+			log.error("error in retrieveOperatorsWithTokenDetails : ", e);
+			throw new OperatorServiceException("Error occurred while getting a DB Connection");
+		} finally {
+
+			DbUtils.closeAllConnections(ps, conn, rs);
+		}
+
+		return operatorList;
+	}
+
+	/**
+	 * Retrieves a single operator given by the name.
+	 *
+	 * @return a single Operator with token details
+	 * @throws OperatorServiceException
+	 */
+	public Operator retrieveOperatorWithTokenDetails(String operatorName) throws OperatorServiceException {
+
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		Operator operator = null;
+
+		try {
+
+			conn = DbUtils.getDbConnection(DataSourceNames.WSO2TELCO_DEP_DB);
+
+			String query = "SELECT " +
+					"ID, operatorname, description, token, tokenurl, " +
+					"tokenauth, refreshtoken, tokenvalidity, tokentime " +
+					"FROM " +
+					OparatorTable.OPERATORS.getTObject() +
+					" WHERE " +
+					"operatorname=?";
+
+			ps = conn.prepareStatement(query);
+			ps.setString(1, operatorName);
+
+			if (log.isDebugEnabled()) {
+				log.debug("sql query in retrieveOperatorWithTokenDetails : " + ps);
+			}
+			rs = ps.executeQuery();
+
+			while (rs.next()) {
+
+				operator = new Operator();
+				operator.setOperatorId(rs.getInt("ID"));
+				operator.setOperatorName(rs.getString("operatorname"));
+				operator.setOperatorDescription(rs.getString("description"));
+				operator.setToken(rs.getString("token"));
+				operator.setTokenurl(rs.getString("tokenurl"));
+				operator.setTokenauth(rs.getString("tokenauth"));
+				operator.setRefreshtoken(rs.getString("refreshtoken"));
+				operator.setTokenvalidity(rs.getLong("tokenvalidity"));
+				operator.setTokentime(rs.getLong("tokentime"));
+
+			}
+		} catch (SQLException e) {
+
+			log.error("database operation error in retrieveOperatorWithTokenDetails : ", e);
+			throw new OperatorServiceException("Error occurred while fetching results");
+		} catch (Exception e) {
+
+			log.error("error in retrieveOperatorWithTokenDetails : ", e);
+			throw new OperatorServiceException("Error occurred while getting a DB Connection");
+		} finally {
+
+			DbUtils.closeAllConnections(ps, conn, rs);
+		}
+
+		return operator;
+	}
+
+
 
 	public List<OperatorApplicationDTO> loadActiveApplicationOperators(OperatorAppSearchDTO searchDTO)throws SQLException, Exception {
 		Connection con = DbUtils.getDbConnection(DataSourceNames.WSO2TELCO_DEP_DB);

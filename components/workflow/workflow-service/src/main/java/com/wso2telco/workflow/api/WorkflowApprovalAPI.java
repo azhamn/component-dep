@@ -16,7 +16,6 @@
 
 package com.wso2telco.workflow.api;
 
-import com.wso2telco.dep.operatorservice.service.OparatorService;
 import com.wso2telco.workflow.application.ApplicationApproval;
 import com.wso2telco.workflow.application.ApplicationApprovalImpl;
 import com.wso2telco.workflow.dao.WorkflowDbService;
@@ -76,8 +75,8 @@ public class WorkflowApprovalAPI {
 
 						int rateId = Integer.parseInt(rate);
 						if (rateId != 0) {
-
-							workflowApprovalRatePublisher.publishHubAPIRate(rateId, appID);
+							String apiVersion=subscription.getApiVersion();
+							workflowApprovalRatePublisher.publishHubAPIRate(rateId, appID,apiVersion);
 						}
 					}
 				}
@@ -127,8 +126,9 @@ public class WorkflowApprovalAPI {
 
 						int rateId = Integer.parseInt(rate);
 						if (rateId != 0) {
-						
-							workflowApprovalRatePublisher.publishOperatorAPIRate(rateId, appID);
+							
+							String apiVersion=subscription.getApiVersion();
+							workflowApprovalRatePublisher.publishOperatorAPIRate(rateId, appID, apiVersion);
 						}
 					}
 				}

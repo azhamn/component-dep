@@ -15,6 +15,12 @@
  ******************************************************************************/
 package com.wso2telco.dep.oneapivalidation.service.impl.location;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import org.apache.log4j.Logger;
+
 import com.wso2telco.dep.oneapivalidation.exceptions.CustomException;
 import com.wso2telco.dep.oneapivalidation.service.IServiceValidate;
 import com.wso2telco.dep.oneapivalidation.util.UrlValidator;
@@ -31,35 +37,72 @@ public class ValidateLocation implements IServiceValidate {
     /** The validation rules. */
     private final String[] validationRules = {"queries","location"};
 
+    static Logger logger = Logger.getLogger(ValidateLocation.class);
+
+    private List<String> addresses = new ArrayList<String>();
+    private double requestAccuracy = 0.0;
+    
     /* (non-Javadoc)
      * @see com.wso2telco.oneapivalidation.service.IServiceValidate#validate(java.lang.String[])
      */
-    public void validate(String[] params) throws CustomException {
-        //Send parameters within String array according to following order, String[] params = "registrationId", "maxBatchSize";
-        String address = nullOrTrimmed(params[0]);
-        Double requestAccuracy = Double.parseDouble(params[1]);
-        
-        ValidationRule[] rules = {
-                new ValidationRule(ValidationRule.VALIDATION_TYPE_MANDATORY_TEL, "address", address),
-                new ValidationRule(ValidationRule.VALIDATION_TYPE_MANDATORY_LOC_ACCURACY, "requestedAccuracy", requestAccuracy)};
-        
-        Validation.checkRequestParams(rules);
-        
-    }
+	public void validate(String[] params) throws CustomException {
+		boolean foundAddressParam = false;
 
-    /**
-     * Null or trimmed.
-     *
-     * @param s the s
-     * @return the string
-     */
-    private static String nullOrTrimmed(String s) {
-        String rv = null;
-        if (s != null && s.trim().length() > 0) {
-            rv = s.trim();
-        }
-        return rv;
-    }
+		if (params == null || params.length == 0) {
+			throw new CustomException("SVC0002",
+					new String[] { "Missing mandatory parameters address and requestedAccuracy" });
+		} else {
+			for (String param : Arrays.asList(params)) {
+				if (param.contains("=")) {
+					String[] pair = param.split("=");
+					if (pair.length > 1 && pair[0].equalsIgnoreCase("address")) {
+						foundAddressParam = true;
+						this.addresses.add(pair[1]);
+						if (logger.isDebugEnabled()) {
+							logger.debug("Adding MSISDN number to request : " + pair[1]);
+						}
+					} else if (pair.length > 1 && pair[0].equalsIgnoreCase("requestedAccuracy")) {
+						try {
+							this.requestAccuracy = Double.parseDouble(pair[1]);
+							if (logger.isDebugEnabled()) {
+								logger.debug("Adding requestAccuracy to request : " + pair[1]);
+							}
+						} catch (NumberFormatException e) {
+							throw new CustomException("SVC0002", new String[] { "requestedAccuracy" });
+						}
+					}
+				} else {
+					// This adds additional MSISDN numbers when user passes multiple MSISDNs
+					// TODO. This Assume additional query params are always MSISDN. Therefore those add directory to
+					// to address list. 
+					// Future this need a validation logic to identify whether this is a valid MSISDN 
+					if (param != null && !param.isEmpty()) {
+						this.addresses.add(param);
+						if (logger.isDebugEnabled()) {
+							logger.debug("Adding MSISDN number to request : " + param);
+						}
+					}
+				}
+			}
+		}
+
+		if (this.addresses.size() == 0 && this.requestAccuracy == 0.0) {
+			throw new CustomException("SVC0002", new String[] { "Missing mandatory parameters address and requestedAccuracy" });
+		} else if (!foundAddressParam || this.addresses.size() == 0) {
+			throw new CustomException("SVC0002", new String[] { "Missing mandatory parameter address" });
+		} else if (this.requestAccuracy == 0.0) {
+			throw new CustomException("SVC0002", new String[] { "Missing mandatory parameter requestedAccuracy" });
+		}
+
+		ValidationRule[] rules = {
+				new ValidationRule(ValidationRule.VALIDATION_TYPE_MANDATORY_TEL, "address",
+						this.addresses.toArray(new String[addresses.size()])),
+				new ValidationRule(ValidationRule.VALIDATION_TYPE_MANDATORY_LOC_ACCURACY, "requestedAccuracy",
+						this.requestAccuracy) };
+
+		Validation.checkRequestParams(rules);
+
+	}
 
     /* (non-Javadoc)
      * @see com.wso2telco.oneapivalidation.service.IServiceValidate#validate(java.lang.String)
@@ -86,4 +129,15 @@ public class ValidateLocation implements IServiceValidate {
 
         UrlValidator.validateRequest(requestParts, validationRules);
     }
+    
+    /**
+     * Returns array of MSISDNs
+     */
+    public String[] getMsisdns() {
+		return this.addresses.toArray(new String[addresses.size()]);
+	}
+
+	public double getRequestAccuracy() {
+		return requestAccuracy;
+	}
 }

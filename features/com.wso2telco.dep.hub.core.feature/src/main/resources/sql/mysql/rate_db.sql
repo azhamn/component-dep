@@ -105,15 +105,15 @@ INSERT INTO `api_operation`
 (20,4,'USSDOutboundFin','USSDOutboundFin','admin'),
 (21,4,'USSDOutboundInit','USSDOutboundInit','admin'),
 (22,4,'USSDSubscription','USSDSubscription','admin'),
-(23,5,'ApplyCredit','ApplyCredit','admin'),
-(24,5,'PartialRefund','PartialRefund','admin'),
+(23,5,'Credit','Credit','admin'),
+(24,5,'CreditRefund','CreditRefund','admin'),
 (25,6,'GetProfile','GetProfile','admin'),
 (26,6,'GetAttributes','GetAttributes','admin'),
 (27,7,'QueryApplicableServices','QueryApplicableServices','admin'),
 (28,7,'ProvisionService','ProvisionService','admin'),
-(29,7,'Un-ProvisionService','Un-ProvisionService','admin'),
+(29,7,'RemoveProvisionService','RemoveProvisionService','admin'),
 (30,7,'ListServiceByCustomer','ListServiceByCustomer','admin'),
-(31,8,'MakePayment','MakePayment','admin'),
+(31,8,'Payment','Payment','admin'),
 (32,8,'ListTransactions','ListTransactions','admin'),
 (33,8,'RefundUser','RefundUser','admin'),
 (34,8,'BalanceLookup','BalanceLookup','admin'),
@@ -329,6 +329,7 @@ DROP TABLE IF EXISTS `sub_rate_nb`;
 CREATE TABLE `sub_rate_nb` (
   `sub_rate_nbid` int(11) NOT NULL AUTO_INCREMENT,
   `api_operationid` int(11) NOT NULL,
+  `api_version` varchar(50) NOT NULL,
   `applicationid` int(11) NOT NULL,
   `rate_defid` int(11) NOT NULL,
   `sub_rate_nbactdate` date DEFAULT NULL,
@@ -338,7 +339,7 @@ CREATE TABLE `sub_rate_nb` (
   `updatedby` varchar(255) DEFAULT NULL,
   `updateddate` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`sub_rate_nbid`),
-  UNIQUE KEY `api_operationid_UNIQUE` (`api_operationid`,`applicationid`,`rate_defid`),
+  UNIQUE KEY `api_operationid_UNIQUE` (`api_operationid`,`applicationid`),
   KEY `fk_sub_rate_nb_1_idx` (`api_operationid`),
   KEY `fk_sub_rate_nb_2_idx` (`rate_defid`),
   CONSTRAINT `fk_sub_rate_nb_1` FOREIGN KEY (`api_operationid`) REFERENCES `api_operation` (`api_operationid`) ON DELETE CASCADE ON UPDATE CASCADE,
@@ -357,6 +358,7 @@ CREATE TABLE `sub_rate_sb` (
   `sub_rate_sbid` int(11) NOT NULL AUTO_INCREMENT,
   `operatorid` int(11) NOT NULL,
   `api_operationid` int(11) NOT NULL,
+  `api_version` varchar(50) NOT NULL,
   `applicationid` int(11) NOT NULL,
   `rate_defid` int(11) NOT NULL,
   `sub_rate_sbactdate` date DEFAULT NULL,
@@ -366,7 +368,7 @@ CREATE TABLE `sub_rate_sb` (
   `updatedby` varchar(255) DEFAULT NULL,
   `updateddate` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`sub_rate_sbid`),
-  UNIQUE KEY `operatorid_UNIQUE` (`operatorid`,`api_operationid`,`applicationid`,`rate_defid`),
+  UNIQUE KEY `operatorid_UNIQUE` (`operatorid`,`api_operationid`,`applicationid`),
   KEY `fk_sub_rate_sb_1_idx` (`operatorid`),
   KEY `fk_sub_rate_sb_2_idx` (`api_operationid`),
   KEY `fk_sub_rate_sb_3_idx` (`rate_defid`),
@@ -424,9 +426,22 @@ CREATE TABLE `tax` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
---
--- Table structure for table `tax_validity`
---
+DROP TABLE IF EXISTS `subs_rate_updated`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `subs_rate_updated` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `sbnbid` int(11) NOT NULL,
+  `direction` varchar(11) NOT NULL,
+  `oldrate_defid` int(11) DEFAULT NULL,
+  `newrate_defid` int(11) DEFAULT NULL,
+  `updatedby` varchar(255) DEFAULT NULL,
+  `updateddate` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `comment` varchar(255),
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
 
 DROP TABLE IF EXISTS `tax_validity`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -681,6 +696,7 @@ CREATE TRIGGER delete_sub_rate_sb_trigger AFTER DELETE ON sub_rate_sb
 END ;
 
 DROP TRIGGER IF EXISTS update_sub_rate_sb_trigger;
+
 CREATE TRIGGER update_sub_rate_sb_trigger BEFORE UPDATE ON sub_rate_sb
   FOR EACH ROW BEGIN
 

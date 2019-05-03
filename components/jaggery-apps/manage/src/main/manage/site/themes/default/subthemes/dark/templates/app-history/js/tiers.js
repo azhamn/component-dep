@@ -14,7 +14,7 @@ function getLblText(lblInfo){
 
 function getAllTiers(lblText){
 	var action = "getAllTiers";
-	
+
 	jagg.post("/site/blocks/app-history/ajax/tier-details.jag", {
 		action : action,
 		lblText : lblText
@@ -34,5 +34,25 @@ function getAllTiers(lblText){
 function setTierDetailsToToolTip(tierAttributevalue){
 	$("#tierattribute_tooltip").html(tierAttributevalue);
 }
+
+function getAllOperators(){
+	var action = "getAllOperators";
+
+	jagg.post("/site/blocks/app-history/ajax/tier-details.jag", {
+		action : action,
+		lblText : lblText
+	}, function(result) {
+		if (!result.error) {
+			if (result.data != null) {
+				setTierDetailsToToolTip(result.data);
+			} else {
+				jagg.showLogin();
+			}
+		} else {
+			jagg.showLogin();
+		}
+	}, "json");
+}
+
 
 

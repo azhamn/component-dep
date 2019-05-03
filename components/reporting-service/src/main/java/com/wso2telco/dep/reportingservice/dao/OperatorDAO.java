@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright  (c) 2015-2016, WSO2.Telco Inc. (http://www.wso2telco.com) All Rights Reserved.
- *  
+ *
  *  WSO2.Telco Inc. licences this file to you under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -18,17 +18,21 @@ package com.wso2telco.dep.reportingservice.dao;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.apimgt.usage.client.exception.APIMgtUsageQueryServiceClientException;
+
 import com.wso2telco.core.dbutils.DbUtils;
 import com.wso2telco.core.dbutils.util.DataSourceNames;
 import com.wso2telco.dep.reportingservice.SPObject;
 import com.wso2telco.dep.reportingservice.dao.Approval;
 import com.wso2telco.dep.reportingservice.util.ReportingTable;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -68,7 +72,32 @@ public class OperatorDAO {
         }
         return op;
     }
-    
+
+    public static Map<Integer, String> getOperators() throws APIMgtUsageQueryServiceClientException, SQLException {
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet results = null;
+        String sql = "SELECT * FROM "+ ReportingTable.OPERATORS +"";
+        Map<Integer, String> op = new HashMap<Integer, String>();
+        try {
+            conn =  DbUtils.getDbConnection(DataSourceNames.WSO2TELCO_DEP_DB);
+            ps = conn.prepareStatement(sql);
+            log.debug("getOperators");
+            results = ps.executeQuery();
+            while (results.next()) {
+            	Integer id = results.getInt("ID");
+            	String name = results.getString("operatorname");
+                op.put(id, name);
+            }
+        } catch (Exception e) {
+        	log.error("Error occured while getting Operators from the database" + e);
+        } finally {
+            DbUtils.closeAllConnections(ps, conn, results);
+        }
+        return op;
+    }
+
+
     /**
      * Gets the applications by operator.
      *
@@ -100,7 +129,7 @@ public class OperatorDAO {
         }
         return applicationIds;
     }
-    
+
     /**
      * Gets the operator names by application.
      *
@@ -130,10 +159,10 @@ public class OperatorDAO {
         } finally {
             DbUtils.closeAllConnections(ps, conn, results);
         }
-        
+
         return operatorNames;
     }
-    
+
     /**
      * Fill operator trace.
      *
@@ -153,14 +182,14 @@ public class OperatorDAO {
                 "FROM "+ ReportingTable.ENDPOINTAPPS +" enp,"+ ReportingTable.OPERATORENDPOINTS +" openp WHERE " +
                 "enp.endpointid = openp.id and openp.operatorid like ? and applicationid = ? "+
                 "ORDER BY type,api_name, operatorid";
-        
+
         try {
             conn = DbUtils.getDbConnection(DataSourceNames.WSO2TELCO_DEP_DB);
             ps = conn.prepareStatement(sql);
             ps.setInt(2, applicationId);
             ps.setInt(4, applicationId);
-                        
-            
+
+
             if (operatorId.equalsIgnoreCase("%")) {
                 ps.setString(1,"%");
                 ps.setString(3,"%");
@@ -168,7 +197,7 @@ public class OperatorDAO {
                 ps.setInt(1, Integer.parseInt(operatorId));
                 ps.setInt(3, Integer.parseInt(operatorId));
             }
-                        
+
             rs = ps.executeQuery();
             while (rs.next()) {
                 Approval temp = new Approval(rs.getString("application_id"),rs.getString("type"),rs.getString("name"),rs.getInt("operatorid"),
@@ -193,7 +222,7 @@ public class OperatorDAO {
         Connection conn = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
-                
+
         String sql = "SELECT opco.operatorname FROM "+ ReportingTable.OPERATORAPPS +" opcoApp INNER JOIN "+ ReportingTable.OPERATORS +" opco ON opcoApp.operatorid = opco.id WHERE opcoApp.isactive = 1 AND opcoApp.applicationid = ? AND opco.operatorname like ?";
 
         String approvedOperators = "";
@@ -202,7 +231,7 @@ public class OperatorDAO {
             conn = DbUtils.getDbConnection(DataSourceNames.WSO2TELCO_DEP_DB);
             ps = conn.prepareStatement(sql);
             ps.setInt(1, applicationId);
-            
+
             if (operator.equals("__ALL__")) {
                 ps.setString(2, "%");
             } else {
@@ -212,7 +241,7 @@ public class OperatorDAO {
             log.debug("getApprovedOperatorsByApplication");
             rs = ps.executeQuery();
             while (rs.next()) {
-                String temp = rs.getString("operatorname");  
+                String temp = rs.getString("operatorname");
                 approvedOperators = approvedOperators + ", " +temp ;
             }
         } catch (Exception e) {
@@ -225,7 +254,7 @@ public class OperatorDAO {
         }else{
             approvedOperators = approvedOperators.replaceFirst(",", "");
         }
-        
+
         return approvedOperators;
     }
 

@@ -39,6 +39,9 @@ jagg.module("taskmanager", {
 	},
 	getRatesList:function () {
 			return jagg.require(jagg.getModulesDir() + "taskmanager/get.jag").getRatesList.apply(this, arguments);
-		},
+	},
+	getOperators:function () {
+			return jagg.require(jagg.getModulesDir() + "taskmanager/get.jag").getOperators.apply(this, arguments);
+	}
 });
 %>

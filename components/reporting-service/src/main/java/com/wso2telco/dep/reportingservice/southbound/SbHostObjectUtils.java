@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright  (c) 2015-2016, WSO2.Telco Inc. (http://www.wso2telco.com) All Rights Reserved.
- *  
+ *
  *  WSO2.Telco Inc. licences this file to you under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -96,16 +96,16 @@ public class SbHostObjectUtils {
 
 	/** The Constant log. */
 	private static final Log log = LogFactory.getLog(SbHostObjectUtils.class);
-	
+
 	/** The Constant ALL_SUBSCRIBERS_KEYWORD. */
 	private static final String ALL_SUBSCRIBERS_KEYWORD = "__ALL__";
-	
+
 	/** The Constant ALL_APPLICATIONS_KEYWORD. */
 	private static final String ALL_APPLICATIONS_KEYWORD = "__ALL__";
-	
+
 	/** The Constant CAT_DEFAULT. */
 	private static final String CAT_DEFAULT = "__default__";
-	
+
 	/** The Constant DISPLAY_DEFAULT. */
 	private static final String DISPLAY_DEFAULT = "Default";
 
@@ -132,7 +132,7 @@ public class SbHostObjectUtils {
 	 * @return the billing subscriptions for user
 	 * @throws APIManagementException the API management exception
 	 * @throws APIMgtUsageQueryServiceClientException the API mgt usage query service client exception
-	 * @throws BusinessException 
+	 * @throws BusinessException
 	 */
 	public static Map<Application, Set<BillingSubscription>> getBillingSubscriptionsForUser(
 			String username, String year, String month)
@@ -177,7 +177,7 @@ public class SbHostObjectUtils {
 	 * @return true, if is subscription valid for month
 	 * @throws APIManagementException the API management exception
 	 * @throws APIMgtUsageQueryServiceClientException the API mgt usage query service client exception
-	 * @throws BusinessException 
+	 * @throws BusinessException
 	 */
 	private static boolean isSubscriptionValidForMonth(SubscribedAPI subAPI,
 			String year, String month) throws BusinessException {
@@ -277,7 +277,7 @@ public class SbHostObjectUtils {
 	 * @param rateCard the rate card
 	 * @param year the year
 	 * @param month the month
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	public static void applyChargingPlan(
 			Map<Application, Set<BillingSubscription>> billingSubs,
@@ -328,7 +328,7 @@ public class SbHostObjectUtils {
 	 * @param appId the app id
 	 * @param apiId the api id
 	 * @param subsId the subs id
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	private static void billComponent(ChargeRate rate,
 			Map<RateKey, ChargeRate> rateCard,
@@ -509,7 +509,7 @@ public class SbHostObjectUtils {
 	 *
 	 * @param subscription the subscription
 	 * @param rateCard the rate card
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	private static void calculateChargeForSubscription(
 			BillingSubscription subscription, Map<RateKey, ChargeRate> rateCard)
@@ -568,7 +568,7 @@ public class SbHostObjectUtils {
 	 * @param appId the app id
 	 * @param apiId the api id
 	 * @param subId the sub id
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	private static void applyChargesForPaymentApi(
 			BillingSubscription.OperatorSubscription opSubscription,
@@ -698,7 +698,7 @@ public class SbHostObjectUtils {
 		// Get the percentage from the rate value
 
 		// apply category wise charge percentage
-		
+
 		categoryEntry.getValue().addAdscom(totaladscom);
 		categoryEntry.getValue().addOpcom(totalopcom);
 		categoryEntry.getValue().addSpcom(totalspcom);
@@ -712,7 +712,7 @@ public class SbHostObjectUtils {
 	 * @param opSubscription the op subscription
 	 * @param categoryCharge the category charge
 	 * @param paymentRequestSet the payment request set
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	private static void applyPaymentChargesByCategory(
 			BillingSubscription.OperatorSubscription opSubscription,
@@ -768,7 +768,7 @@ public class SbHostObjectUtils {
 	 * @param operatorSub the operator sub
 	 * @param CatEntry the cat entry
 	 * @param rate the rate
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	private static void applyChargesWithTax(String apiYear, String apiMonth,
 			Application application, String apiName, String apiVersion,
@@ -788,7 +788,7 @@ public class SbHostObjectUtils {
 		Set<APIRequestDTO> requestTimes = new HashSet<APIRequestDTO>();
 		if (prodKey != null) {
 			String api_version = apiName + ":v" + apiVersion;
-			
+
 			TaxDAO taxDAO = new TaxDAO();
 			requestTimes = taxDAO
 					.getAPIRequestTimesForSubscription(Short.parseShort(year),
@@ -820,7 +820,7 @@ public class SbHostObjectUtils {
 					.getSurchargeElementOpco()).divide(new BigDecimal(100));
 			isSurcharge = true;
 		}
-		
+
 		TaxDAO taxDAO = new TaxDAO();
 		List<Tax> taxList = taxDAO.getTaxesForTaxList(rate
 				.getTaxList());
@@ -873,12 +873,12 @@ public class SbHostObjectUtils {
 	 * @param rate the rate
 	 * @param year the year
 	 * @param month the month
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	private static void applyTaxForBlockCharging(
 			Map.Entry<CategoryCharge, BilledCharge> CatEntry, ChargeRate rate,
 			String year, String month) throws Exception {
-		
+
 		TaxDAO taxDAO = new TaxDAO();
 		List<Tax> taxList = taxDAO.getTaxesForTaxList(rate
 				.getTaxList());
@@ -910,7 +910,7 @@ public class SbHostObjectUtils {
 	 * @param month the month
 	 * @param rateCard the rate card
 	 * @return the map
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	public static Map<Application, Set<BillingSubscription>> chargeSubscriberForMonth(
 			String subscriber, String year, String month,
@@ -928,7 +928,7 @@ public class SbHostObjectUtils {
 	 *
 	 * @param subscription the subscription
 	 * @param rateCard the rate card
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	private static void populateOperatorDetailsOfSubscription(
 			BillingSubscription subscription, Map<RateKey, ChargeRate> rateCard)
@@ -969,8 +969,8 @@ public class SbHostObjectUtils {
 	 * Populate category vise api counts.
 	 *
 	 * @param subscription the subscription
-	 * @throws Exception 
-	 * @throws  
+	 * @throws Exception
+	 * @throws
 	 */
 	private static void populateCategoryViseAPICounts(
 			BillingSubscription subscription) throws Exception {
@@ -1008,7 +1008,7 @@ public class SbHostObjectUtils {
 	 *
 	 * @param username the username
 	 * @return the response times for subscriber
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	public static Map<String, String> getResponseTimesForSubscriber(
 			String username) throws Exception {
@@ -1051,7 +1051,7 @@ public class SbHostObjectUtils {
 	 * @param fromDate the from date
 	 * @param toDate the to date
 	 * @return the all response times
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	public static Map<String, List<APIResponseDTO>> getAllResponseTimes(
 			String opName, String username, String application, String appId,
@@ -1276,7 +1276,7 @@ public class SbHostObjectUtils {
 	 * @param endLimit the end limit
 	 * @param timeOffset the time offset
 	 * @return the native array
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	public static NativeArray generateCustomrCareDataReport(
 			boolean isPersistReport, String fromDate, String toDate,
@@ -1315,7 +1315,7 @@ public class SbHostObjectUtils {
 	 * @param app the app
 	 * @param api the api
 	 * @return the string
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	public static String generateCustomrCareDataRecordCount(
 			boolean isPersistReport, String fromDate, String toDate,
@@ -1341,7 +1341,7 @@ public class SbHostObjectUtils {
 	 * @param timeOffset the time offset
 	 * @param resType the res type
 	 * @return the native array
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	public static NativeArray generateCustomTrafficReport(
 			boolean isPersistReport, String fromDate, String toDate,
@@ -1469,7 +1469,7 @@ public class SbHostObjectUtils {
 	 * @param rateCard the rate card
 	 * @param operatorName the operator name
 	 * @return the native array
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	public static NativeArray generateReportofSubscriber(
 			boolean isPersistReport, String subscriberName, String period,
@@ -1487,7 +1487,7 @@ public class SbHostObjectUtils {
 
 		if (isPersistReport) {
 			fileWriter = getReportLocation(subscriberName, period);
-			
+
 			fileWriter
 					.write(String
 							.format("%s, %s, %s, %s, %s, %s, %s, %s, %s, %s,%s,%s,%s, %s, %s, %s, %s, %s %n",
@@ -1874,7 +1874,7 @@ public class SbHostObjectUtils {
 					NativeArray subscriptionOperators = new NativeArray(0);
 					for (BillingSubscription.OperatorSubscription operatorSub : billingSubscription
 							.getOperatorSubscriptionList()) {
-						
+
 						log.debug("operatorSub:" + operatorSub.toString());
 						if ((operatorName.equalsIgnoreCase("__All__"))
 								|| (operatorSub.getOperator()
@@ -1915,7 +1915,7 @@ public class SbHostObjectUtils {
 									.put(subscriptionOperators.size(),
 											subscriptionOperators,
 											subscriptionOperator);
-							
+
 							if (isPersistReport && fileWriter != null) {
 								String currencyStr = operatorSub.getRate()
 										.getCurrency() + " ";
@@ -2096,7 +2096,7 @@ public class SbHostObjectUtils {
 	 * Gets the all subscribers.
 	 *
 	 * @return the all subscribers
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	public static List<String> getAllSubscribers() throws Exception {
 		BillingDAO billingDAO = new BillingDAO();
@@ -2110,7 +2110,7 @@ public class SbHostObjectUtils {
 	 * Gets the operation types.
 	 *
 	 * @return the operation types
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	public static List<String[]> getOperationTypes() throws Exception {
 		BillingDAO billingDAO = new BillingDAO();
@@ -2131,6 +2131,11 @@ public class SbHostObjectUtils {
 		return operators;
 	}
 
+	public static Map<Integer, String> getOperators() throws SQLException,APIMgtUsageQueryServiceClientException {
+		Map<Integer, String> operators = OperatorDAO.getOperators();
+		return operators;
+	}
+
 	/**
 	 * Gets the operatorbreakdown.
 	 *
@@ -2140,7 +2145,7 @@ public class SbHostObjectUtils {
 	 * @param subscriber the subscriber
 	 * @param api the api
 	 * @return the operatorbreakdown
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	public static Map<String, Integer> getOperatorbreakdown(
 			String applicationid, String year, String month, String subscriber,
@@ -2148,7 +2153,7 @@ public class SbHostObjectUtils {
 		BillingDAO billingDAO = new BillingDAO();
 		String consumerkey = "%";
 		if (applicationid != null) {
-			
+
 			consumerkey = billingDAO.getApplicationconsumer(
 					Integer.parseInt(applicationid),
 					APIConstants.API_KEY_TYPE_PRODUCTION);
@@ -2196,7 +2201,7 @@ public class SbHostObjectUtils {
 	 * @param operator the operator
 	 * @param applicationId the application id
 	 * @return the total api traffic for pie chart
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	public static List<String[]> getTotalAPITrafficForPieChart(String fromDate,
 			String toDate, String subscriber, String operator, int applicationId)
@@ -2218,7 +2223,7 @@ public class SbHostObjectUtils {
 	 * @param applicationId the application id
 	 * @param api the api
 	 * @return the total api traffic for histogram
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	public static List<String[]> getTotalAPITrafficForHistogram(
 			String fromDate, String toDate, String subscriber, String operator,
@@ -2239,7 +2244,7 @@ public class SbHostObjectUtils {
 	 * @param api the api
 	 * @param applicationId the application id
 	 * @return the operator wise api traffic for pie chart
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	public static List<String[]> getOperatorWiseAPITrafficForPieChart(
 			String fromDate, String toDate, String subscriber, String api,
@@ -2261,7 +2266,7 @@ public class SbHostObjectUtils {
 	 * @param applicationId the application id
 	 * @param operator the operator
 	 * @return the approval history
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	public static List<String[]> getApprovalHistory(String fromDate,
 			String toDate, String subscriber, String api, int applicationId,
@@ -2279,7 +2284,7 @@ public class SbHostObjectUtils {
 	 * @param applicationId the application id
 	 * @param operator the operator
 	 * @return the approval history app
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	public static List<Approval> getApprovalHistoryApp(int applicationId,
 			String operator) throws Exception {
@@ -2299,7 +2304,7 @@ public class SbHostObjectUtils {
 	 * @param applicationId the application id
 	 * @param api the api
 	 * @return the all ap is
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	public static List<String[]> getAllAPIs(String fromDate, String toDate,
 			String subscriber, String operator, int applicationId, String api)
@@ -2320,7 +2325,7 @@ public class SbHostObjectUtils {
 	 * @param applicationId the application id
 	 * @param api the api
 	 * @return the all error response codes
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	public static List<String[]> getAllErrorResponseCodes(String fromDate,
 			String toDate, String subscriber, String operator,
@@ -2482,7 +2487,7 @@ public class SbHostObjectUtils {
 	 * @param operator the operator
 	 * @param api the api
 	 * @return the API wise traffic for report
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	public static List<String[]> getAPIWiseTrafficForReport(String fromDate,
 			String toDate, String subscriber, String operator, String api,boolean isError, int applicationId)
@@ -2508,7 +2513,7 @@ public class SbHostObjectUtils {
 	 * @param endLimit the end limit
 	 * @param timeOffset the time offset
 	 * @return the filtered customer care report
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	public static List<String[]> getFilteredCustomerCareReport(String fromDate,
 			String toDate, String msisdn, String subscriber, String operator,
@@ -2531,7 +2536,7 @@ public class SbHostObjectUtils {
 	 * @param operator the operator
 	 * @param api the api
 	 * @return the API wise traffic for report charging
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	public static List<String[]> getAPIWiseTrafficForReportCharging(
 			String fromDate, String toDate, String subscriber, String operator,
@@ -2543,7 +2548,7 @@ public class SbHostObjectUtils {
 		return charging_request_data;
 	}
 
-	 
+
 	/**
 	 * Gets the report.
 	 *
@@ -2632,7 +2637,7 @@ public class SbHostObjectUtils {
 	 * @param applicationId the application id
 	 * @param api the api
 	 * @return the error response codes for pie chart
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	public static List<String[]> getErrorResponseCodesForPieChart(
 			String fromDate, String toDate, String subscriber, String operator,
@@ -2654,7 +2659,7 @@ public class SbHostObjectUtils {
 	 * @param applicationId the application id
 	 * @param api the api
 	 * @return the error response codes for histogram
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	public static List<String[]> getErrorResponseCodesForHistogram(
 			String fromDate, String toDate, String subscriber, String operator,
@@ -2666,7 +2671,7 @@ public class SbHostObjectUtils {
 		return api_response_codes;
 	}
 
-	 
+
 	/**
 	 * Gets the rate card.
 	 *
@@ -3111,7 +3116,7 @@ public class SbHostObjectUtils {
 										}
 										// ========================SUB
 										// CATEGORY====================================
-										
+
 										chargeRate
 												.setCategories(categoryEntityMap);
 									}
@@ -3151,7 +3156,7 @@ public class SbHostObjectUtils {
 		return ratecard;
 	}
 
-	 
+
 	/**
 	 * Gets the rates for operator api.
 	 *
@@ -3294,7 +3299,7 @@ public class SbHostObjectUtils {
 	 * @param applicationId the application id
 	 * @param api the api
 	 * @return the total api traffic for line chart
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	public static List<String[]> getTotalAPITrafficForLineChart(
 			String fromDate, String toDate, String subscriber, String operator,
@@ -3315,7 +3320,7 @@ public class SbHostObjectUtils {
 	 * @param operator the operator
 	 * @param timeRange the time range
 	 * @return the total api response time for line chart
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	public static List<APIResponseDTO> getTotalAPIResponseTimeForLineChart(
 			String fromDate, String toDate, String subscriber, String operator,
@@ -3335,7 +3340,7 @@ public class SbHostObjectUtils {
 	 * @param fromDate the from date
 	 * @param toDate the to date
 	 * @return the all response times by date
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	public static Map<String, List<APIResponseDTO>> getAllResponseTimesByDate(
 			String opName, String username, String fromDate, String toDate)
@@ -3363,7 +3368,7 @@ public class SbHostObjectUtils {
 	 * @param fromDate the from date
 	 * @param toDate the to date
 	 * @return the time consumption for all ap is
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	public static Map<String, String[]> getTimeConsumptionForAllAPIs(
 			String opName, String username, String fromDate, String toDate)
@@ -3411,7 +3416,7 @@ public class SbHostObjectUtils {
 	 * @param appId the app id
 	 * @param apiId the api id
 	 * @param subsId the subs id
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	private static void calculateTiersCharges(
 			List<UsageTiers> selectedUsageTier,
@@ -3498,4 +3503,6 @@ public class SbHostObjectUtils {
 	private static String nvlDefault(String val) {
 		return (val == null || val.isEmpty()) ? DISPLAY_DEFAULT : val;
 	}
+
+
 }

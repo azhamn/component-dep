@@ -1,45 +1,40 @@
 <%
 jagg.block("app-history", {
     initializer:function (data) {
-
-    } ,
+    },
  getInputs:function () {
-        return {
-            "usage":null
-        }
-    } ,
-getOutputs:function (inputs) {
+        return {"usage":null}
+    },
+ getOutputs:function (inputs) {
 	    var numberOfTasks, pageNumber, filterCategory,taskType, result, mod,tasks;
-
 	    var data, user = inputs.user;
 	    var operator ="%";
 	    appid = request.getParameter("AppId");
-	    
 	    var logedop = jagg.getUser().operator;
-        log = new Log();	
-	log.info('############### OPERATOR : '+ logedop);	    
-        
-        mod = jagg.module("approvalaudit");
+        var log = new Log();
 
+        var module = jagg.module("taskmanager");
+        var result_operators = module.getOperators();
+		log.info('############### ALL OPERATORS : '+ stringify(result_operators.data));
+
+        mod = jagg.module("approvalaudit");
         if (user.isAdmin) {
         	operator = "%";
-        } else if (logedop.toUpperCase() == 'SENEGAL') {
-        	operator = "1";
         } else if (logedop.toUpperCase() == 'IVORYCOAST') {
+        	operator = "1";
+        } else if (logedop.toUpperCase() == 'SENEGAL') {
         	operator = "2";
         }
- 
-        result = mod.getApprovalHistoryApp(appid,operator);
-        if(result==null){
-                tasks=null;
-                }
-                else{
-                tasks = result;
-                }
-                    return {
-                        "tasks":tasks
-                    }
-                }
 
+        result = mod.getApprovalHistoryApp(appid,operator);
+	        if(result==null){
+	        	tasks=null;
+	        }else{
+	        	tasks = result;
+	        }
+        return {
+        	"tasks":tasks
+        	}
+        }
 });
 %>
